@@ -1,13 +1,19 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+const express = require('express');
+const path = require('path');
+// const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 
-var app = express();
+const indexRouter = require('./routes/index');
+// var usersRouter = require('./routes/users');
+
+const config = require('./config');
+const { DB_URI } = config;
+
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -16,11 +22,21 @@ app.set('view engine', 'jade');
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+// app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+// app.use('/users', usersRouter);
+
+const options = {
+  useNewUrlParser: true,
+  dbName: 'Rando-test'
+};
+
+mongoose.connect(DB_URI, options)
+.then(() => console.log('Database connection established!'))
+.catch(err => console.error('Error connecting Database instance due to: ', err));
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
