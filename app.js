@@ -3,8 +3,8 @@ const bodyParser = require('body-parser');
 const createError = require('http-errors');
 const mongoose = require('mongoose');
 const logger = require('morgan');
-const config = require('./config');
-const { DB_URI, SECRET_KEY } = config;
+const database = require('./config/database');
+const { DB_URI, SECRET_KEY } = database;
 
 const app = express();
 
@@ -12,7 +12,8 @@ app.set('jwt-secret', SECRET_KEY);
 
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(bodyParser.json({extended: true}));
+app.use(bodyParser.urlencoded({extended: true}));
 app.use('/api', require('./routes/api'));
 
 const options = {

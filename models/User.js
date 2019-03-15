@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const UserSchema = new mongoose.Schema ({
   facebookId: {type: String, required: true},
   userName: {type: String, required: true},
-  myPhotos: {type: Array, required: true},
-  receivedPhotos: {type: Array, required: true}
+  myPhotoIds: {type: Array, required: true},
+  receivedPhotoIds: {type: Array, required: true}
 });
 
 UserSchema.statics.findOneByFacebookId = function(facebookId) {

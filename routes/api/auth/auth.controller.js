@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../../../models/User');
-const { NotFoundError, ForbiddenError } = require('../../../lib/errors');
+const { NotFoundError } = require('../../../lib/errors');
 
 /*
   POST /api/auth/login
@@ -40,16 +40,20 @@ exports.login = async (req, res, next) => {
             issuer: 'choinashil',
             subject: 'userInfo'
           }, (err, token) => {
-            err ? reject(err) : resolve(token);
+            const result = { token, _id }
+            err ? reject(err) : resolve(result);
           }
         );
       });
     };
 
-    const respond = accessToken => {
+    const respond = result => {
+      const { token, _id } = result;
       res.json({
         message: 'logged in successfully',
-        access_token: accessToken
+        access_token: token,
+        userId: _id,
+        userName
       });
     };
 
@@ -69,39 +73,12 @@ exports.login = async (req, res, next) => {
   GET /api/auth/check
 */
 
-exports.check = async (req, res, next) => {
-  try {
-    const secret = req.app.get('jwt-secret');
-    const bearerHeader = req.headers['authorization'];
+exports.check = async (req, res) => {
+  const { _id, userName } = res.locals.userData;
 
-    if (typeof bearerHeader === 'undefined') {
-      throw err;
-    }
-
-    const bearerToken = bearerHeader.split(' ')[1];
-
-    const decode = () => {
-      return new Promise((resolve, reject) => {
-        jwt.verify(bearerToken, secret, (err, decoded) => {
-          err ? reject(err) : resolve(decoded);
-        });
-      });
-    };
-
-    const respond = info => {
-      const { userName } = info;
-      info ? res.json({
-        success: true,
-        userName
-      }) : res.json({success: false});
-    };
-
-    const userInfo = await decode();
-    const userData = await User.findOneByFacebookId(userInfo.facebookId);
-    respond(userData);
-
-  } catch(err) {
-    const { name, message } = err;
-    next(new ForbiddenError(name, message));
-  }
+  res.json({
+    success: true,
+    userId: _id,
+    userName
+  });
 };
