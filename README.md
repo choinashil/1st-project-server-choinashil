@@ -4,7 +4,7 @@
 ## Introduction
 Piccle은 익명의 사용자끼리 랜덤으로 사진을 교환하는 어플리케이션입니다.
 
-![ScreenShot](./images/piccle.jpg)
+![ScreenShot](./piccle.jpg)
 
 
 ## Content
